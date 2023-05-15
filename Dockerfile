@@ -1,5 +1,17 @@
-FROM docker.io/openvino/ubuntu20_dev:2022.3.0
+FROM ubuntu:22.04
 
-ENV DEVICE=GPU
+ARG APT="env DEBIAN_FRONTEND=noninteractive apt"
 
-ENTRYPOINT ["/bin/bash", "-c", "omz_downloader --name mobilenet-ssd && omz_converter --name mobilenet-ssd --precisions FP16 && benchmark_app -m public/mobilenet-ssd/FP16/mobilenet-ssd.xml -hint throughput -t 20 -d ${DEVICE} && sleep 2"]
+RUN ${APT} update && ${APT} install -y curl gpg-agent \
+    && echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/intel-graphics.gpg] https://repositories.intel.com/graphics/ubuntu jammy flex' | \
+       tee -a /etc/apt/sources.list.d/intel.list \
+    && curl -s https://repositories.intel.com/graphics/intel-graphics.key | \
+       gpg --dearmor --output /usr/share/keyrings/intel-graphics.gpg \
+    && ${APT} update \
+    && ${APT} install -y --no-install-recommends \
+       intel-opencl-icd \
+       clinfo \
+    && ${APT} remove -y curl gpg-agent \
+    && ${APT} autoremove -y
+
+ENTRYPOINT ["/bin/bash", "-c", "clinfo && sleep 2"]
