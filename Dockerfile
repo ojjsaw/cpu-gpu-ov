@@ -5,14 +5,14 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
 
 # Update the package lists and install necessary dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     python3 \
     python3-pip \
     intel-opencl-icd \
-    libgl1 \
+    ffmpeg \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-
+    
 # Set the default Python version
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 1
 
