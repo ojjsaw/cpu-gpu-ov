@@ -1,5 +1,12 @@
-FROM docker.io/openvino/ubuntu20_dev:2022.3.0
+# Partial Example from article: https://medium.com/better-programming/docker-wsl-and-oneapi-a-quick-how-to-guide-d7db3363b303
+FROM intel/oneapi-basekit:devel-ubuntu20.04 as builder
 
-ENV DEVICE=GPU
+RUN git clone https://github.com/oneapi-src/oneAPI-samples
 
-ENTRYPOINT ["/bin/bash", "-c", "omz_downloader --name mobilenet-ssd && omz_converter --name mobilenet-ssd --precisions FP16 && benchmark_app -m public/mobilenet-ssd/FP16/mobilenet-ssd.xml -hint throughput -t 20 -d ${DEVICE} && sleep 2"]
+RUN cmake /oneAPI-samples/DirectProgramming/DPC++/N-BodyMethods/Nbody
+RUN make
+
+FROM intel/oneapi-runtime:latest
+
+COPY - from=builder src/nbody /
+CMD ["/nbody"]
