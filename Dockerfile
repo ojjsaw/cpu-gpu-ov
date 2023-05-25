@@ -1,12 +1,6 @@
-# https://github.com/oneapi-src/oneAPI-samples/blob/master/DirectProgramming/C%2B%2BSYCL/N-BodyMethods/Nbody/README.md
-FROM docker.io/intel/oneapi-basekit:latest as builder
+#https://github.com/oneapi-src/oneVPL/tree/master/tools/legacy/sample_multi_transcode
+FROM docker.io/intel/oneapi-aikit:devel-ubuntu20.04
 
-RUN git clone https://github.com/oneapi-src/oneAPI-samples
+ADD cars_320x240.h265 /app/
 
-RUN cmake /oneAPI-samples/DirectProgramming/C++SYCL/N-BodyMethods/Nbody
-RUN make
-
-FROM docker.io/intel/oneapi-runtime:latest
-
-COPY --from=builder src/nbody /
-CMD ["/nbody"]
+CMD ["sample_multi_transcode -hw -i::h265 /app/cars_320x240.h265 -o::mpeg2 /app/out.mpeg2 && sleep 2"]
