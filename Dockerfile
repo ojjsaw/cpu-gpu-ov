@@ -1,6 +1,12 @@
-#https://github.com/oneapi-src/oneVPL/tree/master/tools/legacy/sample_multi_transcode
-FROM docker.io/intel/oneapi-aikit:devel-ubuntu20.04
+# https://github.com/oneapi-src/oneAPI-samples/blob/master/DirectProgramming/C%2B%2BSYCL/N-BodyMethods/Nbody/README.md
+FROM docker.io/intel/oneapi-basekit:latest as builder
 
-RUN apt-get update && apt-get install -y libva-drm2
+RUN git clone https://github.com/oneapi-src/oneAPI-samples
 
-ENTRYPOINT ["/bin/bash","-c","/opt/intel/oneapi/vpl/latest/bin/sample_multi_transcode -hw -i::h265 /opt/intel/oneapi/vpl/latest/examples/content/cars_320x240.h265 -o::mpeg2 /opt/intel/oneapi/vpl/latest/examples/content/out.mpeg2 && sleep 2"]
+RUN cmake /oneAPI-samples/DirectProgramming/C++SYCL/N-BodyMethods/Nbody
+RUN make
+
+FROM docker.io/intel/oneapi-runtime:latest
+
+COPY --from=builder src/nbody /
+CMD ["/nbody"]
