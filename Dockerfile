@@ -9,4 +9,4 @@ RUN make
 FROM docker.io/intel/oneapi-runtime:latest
 
 COPY --from=builder src/nbody /
-CMD ["/nbody"]
+ENTRYPOINT ["/bin/bash","-c","/nbody && sleep 2"]
