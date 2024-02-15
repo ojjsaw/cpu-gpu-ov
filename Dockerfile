@@ -1,4 +1,4 @@
-FROM docker.io/openvino/ubuntu20_dev:2022.3.0
+FROM docker.io/openvino/ubuntu20_dev:2023.2.0
 
 ENV DEVICE=GPU
 
